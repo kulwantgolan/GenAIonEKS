@@ -1,0 +1,39 @@
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  additionalLabels:
+    release: kube-prometheus-stack  # Important for prometheus operator discovery
+  interval: 30s
+  scrapeTimeout: 10s
+  honorLabels: true
+
+service:
+  type: ClusterIP
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/app-metrics: "true"
+    prometheus.io/port: "9400"
+  labels:
+    app.kubernetes.io/name: "dcgm-exporter"
+
+nodeSelector:
+  "nvidia.com/gpu.present": "true"
+
+tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+pod:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9400"
+  labels:
+    app.kubernetes.io/name: "dcgm-exporter"
+
+dcgmExporter:
+  env:
+    - name: "DCGM_EXPORTER_LISTEN"
+      value: ":9400"
+    - name: "DCGM_EXPORTER_KUBERNETES"
+      value: "true"
