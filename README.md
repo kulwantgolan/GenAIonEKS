@@ -15,3 +15,10 @@ Scaling LLM inference using vLLM and Ray:
 3. Leverage Ray's autoscaling features with Nvidia instances to optimize performance.
 4. Configure environment settings and scaling parameters for model serving.
 5. Deploy Open WebUI, a user-friendly interface for interacting with your LLM.
+
+RAG on Aamazon EKS
+
+1. Set Up S3 Vector Database: Configure Amazon S3 Vectors for storing document embeddings with semantic search capabilities
+2. Create Document Processing Pipeline: Build a Kubernetes job to process documents and generate embeddings
+3. Deploy RAG Service: Create a RayServe deployment that combines Mistral LLM with RAG capabilities
+4. Create Gradio Interface: Implement a user-friendly web interface for interacting with the RAG system

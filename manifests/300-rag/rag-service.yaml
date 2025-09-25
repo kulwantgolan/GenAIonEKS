@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-service-serve-svc
+spec:
+  selector:
+    ray.io/node-type: head
+    ray.io/cluster: rag-service-raycluster
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP
