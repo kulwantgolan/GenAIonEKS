@@ -22,3 +22,16 @@ RAG on Aamazon EKS
 2. Create Document Processing Pipeline: Build a Kubernetes job to process documents and generate embeddings
 3. Deploy RAG Service: Create a RayServe deployment that combines Mistral LLM with RAG capabilities
 4. Create Gradio Interface: Implement a user-friendly web interface for interacting with the RAG system
+
+Agentic AI on Amazon EKS
+
+1. Deploying Strands Agents
+Build agents using Strands SDK
+Configure time and weather tools for location-based queries
+Connect models with tools using the Strands framework
+Deploy agents on Amazon EKS
+
+2. Testing the agents
+Query agents for time and weather information
+Test location-based functionality
+Interact with deployed agents
