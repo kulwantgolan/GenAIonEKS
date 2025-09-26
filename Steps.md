@@ -190,8 +190,51 @@ Cleanup
 
 ---
 
+## Advanced AI on Amazon EKS
+Focusing on advanced techniques and architectures that go beyond basic inference.
+### RAG
+Build a complete RAG pipeline on Amazon EKS using Ray for distributed computing, Qdrant as our vector database, and Mistral as our large language model.
 
+The module is divided into four sequential sections:
+- Set Up S3 Vector Database: Configure Amazon S3 Vectors for storing document embeddings with semantic search capabilities
+   - Before we can deploy Ray-based workloads, we need to install the KubeRay Operator
+   - Setup Env variables
+   - Create S3 Vector Bucket
+   - Create the vector index with 384 dimensions (matching the all-MiniLM-L6-v2 model)
+    <img width="1492" height="345" alt="image" src="https://github.com/user-attachments/assets/da265315-5ac9-4499-b59d-6b38d70058f1" />
+   - Set Up IAM Permissions for S3 Vectors
+   - Create an IAM role for our document processor
+   - Create the EKS Pod Identity association: This configures Pod Identity to assign the IAM role to pods using the s3-access-sa service account.
+   - Create the service account
+   - Test the S3 Vectors Connection: showing your index with name "knowledge-base"
+   <img width="1512" height="651" alt="image" src="https://github.com/user-attachments/assets/7190840b-be05-41c0-b249-bf3fc132182b" />
+- Create Document Processing Pipeline: Build a Kubernetes job to process documents and generate embeddings
+  <img width="1038" height="575" alt="image" src="https://github.com/user-attachments/assets/d97c50f4-33f1-4833-b887-d33fca3175b9" />
+   - We'll upload a sample dataset to Amazon S3, then create a processing script that uses the model `all-MiniLM-L6-v2` to generate embeddings and store them in our S3 Vectors database.
+   - Prepare Sample Data and S3 Bucket
+   - Create a ConfigMap with the Document Processing Script
+   - Create a Kubernetes Job for the Document Processor
+   - Process and Deploy the Document Processor Job (let's substitute the environment variables and deploy our job; Monitor the Job Progress)
+      - Let's check the logs of the pod (The will Install the required dependencies; Connect to S3 Vectors and set up the collection if needed; Find documents in S3; Process the documents and generate embeddings;  Store the embeddings in S3 Vectors)
+   - Verify the Data in S3 Vectors
+- Deploy RAG Service: Create a RayServe deployment that combines Mistral LLM with RAG capabilities
+  <img width="1144" height="689" alt="image" src="https://github.com/user-attachments/assets/2654cf48-74c1-40c0-ab87-e5d3e13763a3" />
+  - Now that we have our vector database with document embeddings; Deploy Mistral LLM (to be used by RAG service) deployed on RayServer.
+  - Deploy the RAG Service
+       - Create a ConfigMap containing our RAG service implementation
+       - Create the RayService that will deploy our RAG service
+       - Check the RayService named `rag-service` to be ready
+      <img width="743" height="229" alt="image" src="https://github.com/user-attachments/assets/0d6184d8-8bae-467c-ba66-e432c2f12b94" />
+       - Create a Service for External Access
+       - Test the RAG Service; and compare the results of the query without RAG Service
+- Create Gradio Interface: Implement a user-friendly web interface for interacting with the RAG system
+  <img width="1146" height="682" alt="image" src="https://github.com/user-attachments/assets/f47dbd26-d7ac-492a-bcdf-ed33278b081d" />
+   - 
+You have successfully built and deployed a complete RAG pipeline on Amazon EKS with a user-friendly Gradio interface. This system showcases how the combination of Ray for distributed computing, S3 Vectors for vector storage, and Mistral as the LLM creates a powerful and cost-effective RAG solution.
 
+- Clean up
+### Agentic AI
+Deploy intelligent agents on Amazon EKS using the Strands Agents SDK, enabling LLMs to remember past interactions, make decisions, and use tools like time and weather services to respond to location-based queries.
 
 
 
