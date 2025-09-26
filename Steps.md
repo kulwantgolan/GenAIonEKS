@@ -231,12 +231,54 @@ The module is divided into four sequential sections:
   <img width="1146" height="682" alt="image" src="https://github.com/user-attachments/assets/f47dbd26-d7ac-492a-bcdf-ed33278b081d" />
    - 
 You have successfully built and deployed a complete RAG pipeline on Amazon EKS with a user-friendly Gradio interface. This system showcases how the combination of Ray for distributed computing, S3 Vectors for vector storage, and Mistral as the LLM creates a powerful and cost-effective RAG solution.
+<img width="1590" height="919" alt="image" src="https://github.com/user-attachments/assets/f5611571-bcdd-41d4-9caf-be96d8837032" />
 
-- Clean up
+<img width="1562" height="489" alt="image" src="https://github.com/user-attachments/assets/12e68d18-5d4e-445b-a322-5145f56af143" />
+- Slight issue of color theme (possibly only tested for Dark theme)
+
+- Clean up; verigy GPU Availability (`kubectl get nodes -o=custom-columns=NAME:.metadata.name,GPUS:.status.capacity.'nvidia\.com/gpu'`)
 ### Agentic AI
-Deploy intelligent agents on Amazon EKS using the Strands Agents SDK, enabling LLMs to remember past interactions, make decisions, and use tools like time and weather services to respond to location-based queries.
+Deploy intelligent agents on Amazon EKS using the `Strands Agents SDK`, enabling LLMs to remember past interactions, make decisions, and use tools like time and weather services to respond to location-based queries.
+<img width="1125" height="625" alt="image" src="https://github.com/user-attachments/assets/3887941a-6094-4efd-9ee9-b2c1c279317c" />
+
+Unlike basic LLM applications, agents can remember past interactions, make decisions, and use tools—enabling richer, multi-turn experiences like customer support or task planning.
+
+We are building the following:
+
+### Deploying Strands Agents:
+- Build agents using Strands SDK
+- Configure time and weather tools for location-based queries
+- Connect models with tools using the Strands framework
+- Deploy agents on Amazon EKS
+
+Strands is lightweight, production-ready, and model-agnostic.It integrates with the Model Context Protocol (MCP), allowing agents to connect with external services and maintain structured context across sessions. 
+
+1. Deploying the Model: vanilla Kubernetes service and deployment.
+   - specific arguments required for automatic function calling (these parameters are essential for our agents to intelligently decide when and how to use the time and weather tools)
+     -  --enable-auto-tool-choice: Enables the model to automatically generate tool calls when appropriate
+     -  --tool-call-parser=mistral: Specifies the parser format for tool calls
+     -  
+2. Building the agent
+   - Build and deploy a Strands agent to the EKS cluster (strands-agent/strands-agent.py; strands-agent/requirements.txt; strands-agent/Dockerfile )
+      - Create an Amazon ECR repository to store our Docker image.
+      - Build the container image and push it to ECR.
+      - Create a deployment manifest that uses this image.
+        
+### Testing the agents
+- Query agents for time and weather information
+- Test location-based functionality
+- Interact with deployed agents
+
+You might be curious about how the request flow works and why the model gets invoked twice. When you send a query to the agent, it may appear that a single response is generated — but behind the scenes, two separate model calls are occurring. Here's the process:
+
+- First call: The LLM receives the user's query and decides which tool (e.g., weather or time) to use. Instead of responding directly, it returns a structured tool call for the agent to execute.
+- Second call: Once the tool returns factual data, the LLM is called again to generate a conversational and informative reply using that data.
+  
+This strategy separates reasoning from response generation — giving your agent both intelligent behavior and natural language capabilities.
+<img width="655" height="295" alt="image" src="https://github.com/user-attachments/assets/704cd15b-be0c-4ebe-ad4a-385beb86f864" />
 
 
+<img width="1267" height="343" alt="image" src="https://github.com/user-attachments/assets/03862923-a20a-4ef0-839d-e0f7a191f651" />
 
 
 
