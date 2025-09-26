@@ -132,16 +132,63 @@ https://d1daa9dsdfa45l.cloudfront.net/proxy/8265/#/overview
 
 Note: It takes up to 2-3 minutes for the LoadBalancer to become active. Once it's ready, you can access the Open WebUI web interface through your browser.
 If the URL fails to appear, this is likely due to a race condition during the initial environment setup. To resolve this issue, restart the AWS Load Balancer Controller. 
+http://open-webui-ingress-1306108428.us-west-2.elb.amazonaws.com/
+
 <img width="1871" height="896" alt="image" src="https://github.com/user-attachments/assets/739b0d30-dfe7-47f7-a6af-275bb5f9b332" />
 
 <img width="1882" height="876" alt="image" src="https://github.com/user-attachments/assets/4a570748-f97b-4a6e-806c-88074ed1d538" />
 
 ## Observing LLM inference workloads
 
-1. Setup Observability stack
-2. Configuring NVIDIA DCGM Monitoring Dashboard
-3. vLLM Model Monitoring
-4. Ray Monitoring
+1. Setup Observability stack: Deployed several key components in the `monitoring` namespace that form our observability stack
+   - Prometheus Stack
+      - Prometheus Server: Central metrics collection and storage
+      - Node Exporter: Collects hardware and OS metrics from each node (runs as DaemonSet)
+      - Kube State Metrics: Generates metrics about Kubernetes objects
+   - Grafana Stack: Grafana server and Grafana Operator to provision Dashboards using custom resources (YAML files).
+   - The `NVIDIA Data Center GPU Manager (DCGM) Exporter` is a tool that exposes GPU metrics for NVIDIA GPUs.
+      - Create a values file for the DCGM Exporter configuration.
+      - Using helm, Install the NVIDIA DCGM Exporter to collect GPU metrics
+      - Verify GPU Metrics using port-forwarding
+    
+   <img width="1566" height="448" alt="image" src="https://github.com/user-attachments/assets/cdc42bc9-f6bc-442d-a341-960fa663521a" />
+
+2. Configuring NVIDIA DCGM Monitoring Dashboard in Grafana: In order to reach the Grafana service we will need to create an Ingress. To enhance security, you can restrict access to the load balancer by allowing only your public IP address. Consider that it takes 2-3 minutes for the load balancer to provision and become active. Get loadbalancer URL. Get Grafana admin password and K8s secret.
+   - Open Grafana, If everything is configured correctly you should see a dashboard called NVIDIA DCGM Exporter Dashboard under the monitoring folder.
+  <img width="756" height="519" alt="image" src="https://github.com/user-attachments/assets/63134db6-3d04-41bd-95b0-b7cd54513b45" />
+<img width="1873" height="446" alt="image" src="https://github.com/user-attachments/assets/94914bb4-d36a-4db4-a612-eac470d8263d" />
+
+3. Ray Monitoring: Create a `PodMonitor` resource for Ray head and worker nodes - tells Prometheus which pods to scrape for metrics collection.
+   - Create Ray Grafana Dashboard using Grafana Operator: Together, these dashboards provide a powerful toolkit for monitoring, troubleshooting, and optimizing your Ray-powered LLM inference services.
+     - `Deafult Dashboard` in monitoring
+     - `Serve Dashboard` focuses specifically on Ray Serve performance metrics, displaying request latencies, throughput, and queue lengths for your deployed models.
+     - `Serve Deployment Dashboard` provides detailed monitoring for individual Ray Serve deployments, tracking replica scaling, resource consumption, and deployment-specific performance indicators.
+   - You already have:
+     - OPENWEBUI to interact with model
+     - GRAFANA URL to access the dashboard
+    <img width="858" height="475" alt="image" src="https://github.com/user-attachments/assets/20999faa-f8ad-4fc4-a1f2-60d7eab34ad1" />
+
+Clean up the monitoring resources and RayServe deployment, Delete Open Web UI provisioned previously.      
+
+4. vLLM Model Monitoring
+   - Ensure vLLm is deployed
+   - Creating vLLM ServiceMonitor
+   - Create vLLM Grafana Dashboard using Grafana Operator
+   - Accessing Grafana Dashboard: `vLLM dashboard`: vLLM metrics dashboard provides comprehensive monitoring of your LLM inference deployment, helping you understand performance, resource utilization, and request processing.
+      - vLLM Iterations Token: Useful for understanding processing patterns and optimization opportunities
+      - vLLM Generations Tokens: Important for capacity planning and usage monitoring
+      - vLLM Time Per Output Token: average time taken to generate each token - identify performance bottlenecks
+      - vLLM Time to First Token Counter: Tracks the latency between request receipt and first token generation - monitor initial response time performance
+      - vLLM Time in Queue Requests: how long requests wait 
+      - vLLM Request Prompt Tokens: number of input tokens in requests - optimizing prompt engineering and resource allocation
+      - vLLM Request Inference Time: total time taken for inference processing - overall system performance
+      - vLLM Num Preemptions Total: the number of request preemptions - Indicates resource contention and scheduling efficiency
+
+<img width="827" height="490" alt="image" src="https://github.com/user-attachments/assets/b9efff58-9c2d-41f2-a170-b65c6b37f1db" />
+
+Cleanup
+
+---
 
 
 
